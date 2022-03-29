@@ -1,0 +1,83 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © kimwuwei16
+
+//@version=5
+indicator("Soports i resistències", overlay=true)
+offset = input(0, "Offset") 
+resistencia = 0.0
+resistencia_high = 0.0
+suport = 0.0
+suport_high = 0.0
+h=0.0
+l=0.0
+r_trencada = false
+punt_relatiu_ruptura = 3
+punt_relatiu_ruptura2 = 3
+pre_suport = 0.0
+pre_suport2 = 0.0
+
+// Liniea de all time highs amb offset de n veles
+h := bar_index == 0 ? high : high[offset] > h[1] ? high[offset] : h[1]
+// Si el mínim d'una vela és menor que el minim de l'anterior, el high més gran fins al moment és una resistència
+
+valor = 0    
+if low < low[1]
+    resistencia := h
+else
+    resistencia := resistencia[1]
+    r_trencada := false
+    
+// Criteri per resistència auxiliar    
+if high < high[1]
+    resistencia_high := h
+else
+    resistencia_high := resistencia_high[1]
+
+//*
+//** PENDENT DE CANVIAR ESTOS DOS BLOCS PER INCLOURE DADES DES DE LA VELA QUE "TÉ" LA RESISTÈNCIA  
+//**
+
+// Com que Pinescript no mos dixa indexar directament haurem de fer bucle cada vegada que se trenque la resistència
+if bar_index == 0
+    suport := low
+else if high >= resistencia
+    for counter = 1 to 2500
+        // El nou suport serà el mínim low de les veles entre la rutura de resistència anterior i l'actual, per tant busquem l'índex de l'anterior ruptura
+        if resistencia[counter] != resistencia[counter+1]
+            res = resistencia[counter-1]
+            for counter2=counter to 4500
+                if high[counter2] >= res
+                    punt_relatiu_ruptura := counter2
+                    break
+            
+if bar_index == 0
+    suport := low
+else if high >= resistencia_high
+    for counter = 1 to 2500
+        // El nou suport serà el mínim low de les veles entre la rutura de resistència anterior i l'actual, per tant busquem l'índex de l'anterior ruptura
+        if resistencia_high[counter] != resistencia_high[counter+1]
+            res2 = resistencia_high[counter-1]
+            for counter2=counter to 4500
+                if high[counter2] >= res2
+                    punt_relatiu_ruptura2 := counter
+                break
+    
+pre_suport := ta.lowest(low,punt_relatiu_ruptura+1) 
+pre_suport2 := ta.lowest(low,punt_relatiu_ruptura2+1) 
+
+if high >= resistencia
+    suport := pre_suport
+else
+    suport := suport[1]
+    
+if high >= resistencia_high
+    suport_high := pre_suport2
+else
+    suport_high := suport_high[1]
+
+// Dibuixem resistència
+plot(resistencia, linewidth=4, color=color.green)
+// Dibuixem el suport
+plot(suport, linewidth=4, color=color.fuchsia)
+// plot(resistencia_high, linewidth=3, color=color.blue)
+// plot(suport_high, linewidth=3, color=color.yellow)
