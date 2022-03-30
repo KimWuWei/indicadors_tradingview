@@ -93,6 +93,3 @@ plot(suport, linewidth=4, color=color.fuchsia)
 // plot(resistencia_high, linewidth=3, color=color.blue)
 // plot(suport_high, linewidth=3, color=color.yellow)
 
-//Zona de test
-plot(ultim_canvi_suport)
-plot(ultim_canvi_resistencia)
