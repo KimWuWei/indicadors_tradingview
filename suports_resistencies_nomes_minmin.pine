@@ -1,0 +1,73 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © kimwuwei16
+
+//@version=5
+indicator("Soports i resistències", overlay=true)
+offset = input(0, "Offset") 
+resistencia = 0.0
+suport = 0.0
+h=0.0
+l=0.0
+r_trencada = false
+punt_relatiu_ruptura = 3
+pre_suport = 0.0
+var ultim_canvi_resistencia = 0
+var ultim_canvi_suport = 1
+
+// Liniea de all time highs amb offset de n veles
+h := bar_index == 0 ? high : high[offset] > h[1] ? high[offset] : h[1]
+
+// Si el mínim d'una vela és menor que el minim de l'anterior, el high més gran fins al moment és una resistència:   
+if low < low[1] and (ultim_canvi_suport > ultim_canvi_resistencia)
+    resistencia := h
+    if resistencia != resistencia[1]
+        ultim_canvi_resistencia := bar_index
+    else
+        ultim_canvi_resistencia := ultim_canvi_resistencia[1]
+else
+    resistencia := resistencia[1]
+    
+// Criteri per resistència auxiliar    
+if high < high[1]
+    resistencia_high := h
+else
+    resistencia_high := resistencia_high[1]
+
+
+// Inicialitzem suport
+if bar_index == 0
+    suport := low
+// Si es trenca la resistencia i l'últim que s'havia canviat era la resistència, s'actualitza el suport
+else if high > resistencia and (ultim_canvi_suport<ultim_canvi_resistencia)
+    for counter = 1 to 2500
+        // El nou suport serà el mínim low de les veles entre la rutura de resistència actual i la vela anterior al canvi de resistència que conté el high=resistència
+        if resistencia[counter] != resistencia[counter+1]
+            res = resistencia[counter-1]
+            for counter2=counter to 4500
+                if high[counter2] == res
+                    punt_relatiu_ruptura := counter2
+                    break
+    
+pre_suport := ta.lowest(low,punt_relatiu_ruptura+1) 
+
+// Si s'ha trencat la resistència actualitzem el suport
+if high >= resistencia and ultim_canvi_resistencia > ultim_canvi_suport 
+    suport := pre_suport
+    if suport != suport[1]
+        ultim_canvi_suport := bar_index
+else
+    suport := suport[1]
+    
+if high >= resistencia_high
+    suport_high := pre_suport2
+else
+    suport_high := suport_high[1]
+
+// Dibuixem resistència
+plot(resistencia, linewidth=4, color=color.green)
+// Dibuixem el suport
+plot(suport, linewidth=4, color=color.fuchsia)
+//Zona de test
+plot(ultim_canvi_suport)
+plot(ultim_canvi_resistencia)
+
