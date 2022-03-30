@@ -15,12 +15,15 @@ punt_relatiu_ruptura = 3
 punt_relatiu_ruptura2 = 3
 pre_suport = 0.0
 pre_suport2 = 0.0
-ultim_canvi_resistencia = 0
-ultim_canvi_suport = 1
+var ultim_canvi_resistencia = 0
+var ultim_canvi_suport = 1
 
 // Liniea de all time highs amb offset de n veles
 h := bar_index == 0 ? high : high[offset] > h[1] ? high[offset] : h[1]
 
+// if bar_index != 0
+//     ultim_canvi_suport := ultim_canvi_suport[1]
+//     ultim_canvi_resistencia := ultim_canvi_resistencia[1]
 
 // Si el mínim d'una vela és menor que el minim de l'anterior, el high més gran fins al moment és una resistència:
 valor = 0    
@@ -32,7 +35,7 @@ if low < low[1] and (ultim_canvi_suport > ultim_canvi_resistencia)
         ultim_canvi_resistencia := ultim_canvi_resistencia[1]
 else
     resistencia := resistencia[1]
-    ultim_canvi_resistencia := ultim_canvi_resistencia[1]
+    //ultim_canvi_resistencia := ultim_canvi_resistencia[1]
     
 // Criteri per resistència auxiliar    
 if high < high[1]
@@ -78,11 +81,9 @@ if high >= resistencia and ultim_canvi_resistencia > ultim_canvi_suport //and ul
     suport := pre_suport
     if suport != suport[1]
         ultim_canvi_suport := bar_index
-    else
-        ultim_canvi_suport := ultim_canvi_suport[1]
 else
     suport := suport[1]
-    ultim_canvi_suport := ultim_canvi_suport[1]
+    //ultim_canvi_suport := ultim_canvi_suport[1]
     
 if high >= resistencia_high
     suport_high := pre_suport2
