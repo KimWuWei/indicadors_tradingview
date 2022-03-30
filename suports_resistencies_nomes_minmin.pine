@@ -48,20 +48,16 @@ else if high > resistencia and (ultim_canvi_suport<ultim_canvi_resistencia)
                     punt_relatiu_ruptura := counter2
                     break
     
-pre_suport := ta.lowest(low,punt_relatiu_ruptura+1) 
+pre_suport := ta.lowest(low, punt_relatiu_ruptura+1) 
 
-// Si s'ha trencat la resistència actualitzem el suport
+// ACTUALITZEM SUPORT
 if high >= resistencia and ultim_canvi_resistencia > ultim_canvi_suport 
     suport := pre_suport
     if suport != suport[1]
         ultim_canvi_suport := bar_index
 else
     suport := suport[1]
-    
-if high >= resistencia_high
-    suport_high := pre_suport2
-else
-    suport_high := suport_high[1]
+ 
 
 // Dibuixem resistència
 plot(resistencia, linewidth=4, color=color.green)
@@ -70,4 +66,5 @@ plot(suport, linewidth=4, color=color.fuchsia)
 //Zona de test
 plot(ultim_canvi_suport)
 plot(ultim_canvi_resistencia)
+plot(punt_relatiu_ruptura, color=colo.yellow)
 
